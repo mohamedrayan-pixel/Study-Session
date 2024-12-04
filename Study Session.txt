@@ -1,0 +1,111 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
+
+#define MAX_ROOMS 10
+#define MAX_NAME_LENGTH 50
+
+// Define a structure to represent a room
+typedef struct {
+    int roomNumber;
+    bool isAvailable;
+    char reservedBy[MAX_NAME_LENGTH];
+} Room;
+
+// Function prototypes
+void initializeRooms(Room rooms[], int numRooms);
+void displayRooms(Room rooms[], int numRooms);
+void reserveRoom(Room rooms[], int numRooms, int roomNumber, const char *name);
+void cancelReservation(Room rooms[], int numRooms, int roomNumber);
+int main() {
+    Room rooms[MAX_ROOMS];
+    initializeRooms(rooms, MAX_ROOMS);
+
+    int choice, roomNumber;
+    char name[MAX_NAME_LENGTH];
+
+    do {
+        printf("\n1. Display rooms\n2. Reserve a room\n3. Cancel reservation\n4. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch(choice) {
+            case 1:
+                displayRooms(rooms, MAX_ROOMS);
+                break;
+            case 2:
+                printf("Enter your name: ");
+                scanf("%s", name);
+                printf("Enter the room number to reserve: ");
+                scanf("%d", &roomNumber);
+                reserveRoom(rooms, MAX_ROOMS, roomNumber, name);
+                break;
+
+ case 3:
+                printf("Enter the room number to cancel reservation: ");
+                scanf("%d", &roomNumber);
+                cancelReservation(rooms, MAX_ROOMS, roomNumber);
+                break;
+            case 4:
+                printf("Exiting program.\n");
+                break;
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    } while(choice != 4);
+
+    return 0;
+}
+
+// Initialize rooms with default values
+void initializeRooms(Room rooms[], int numRooms) {
+    for (int i = 0; i < numRooms; i++) {
+        rooms[i].roomNumber = i + 1;
+        rooms[i].isAvailable = true;
+        strcpy(rooms[i].reservedBy, "");
+    }
+}
+
+// Display the current status of all rooms
+void displayRooms(Room rooms[], int numRooms) {
+printf("\nRoom\tAvailability\tReserved By\n");
+    for (int i = 0; i < numRooms; i++) {
+        printf("%d\t%s\t\t%s\n", rooms[i].roomNumber, 
+               rooms[i].isAvailable ? "Available" : "Not Available", 
+               rooms[i].reservedBy);
+    }
+}
+
+// Reserve a room
+void reserveRoom(Room rooms[], int numRooms, int roomNumber, const char *name) {
+    if (roomNumber < 1 || roomNumber > numRooms) {
+        printf("Invalid room number.\n");
+        return;
+    }
+
+    if (!rooms[roomNumber - 1].isAvailable) {
+        printf("Room %d is already reserved.\n", roomNumber);
+        return;
+    }
+
+    rooms[roomNumber - 1].isAvailable = false;
+    strcpy(rooms[roomNumber - 1].reservedBy, name);
+    printf("Room %d reserved successfully by %s.\n", roomNumber, name);
+}
+// Cancel reservation of a room
+void cancelReservation(Room rooms[], int numRooms, int roomNumber) {
+    if (roomNumber < 1 || roomNumber > numRooms) {
+        printf("Invalid room number.\n");
+        return;
+    }
+
+    if (rooms[roomNumber - 1].isAvailable) {
+        printf("Room %d is not reserved.\n", roomNumber);
+        return;
+    }
+
+    rooms[roomNumber - 1].isAvailable = true;
+    strcpy(rooms[roomNumber - 1].reservedBy, "");
+    printf("Reservation for room %d canceled.\n", roomNumber);
+}
